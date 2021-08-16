@@ -1,0 +1,190 @@
+<div class="main-content">
+  <div class="container-fluid">
+      <div class="row" *ngIf="!isInformacoes && !isEditando">
+          <div class="col-md-12">
+              <div class="card">
+                  <div class="card-header card-header-success">
+                    <h4 class="card-title ">Pessoas</h4>
+                  </div>
+                  <div class="card-body">
+                      <div class="table-responsive">
+                          <table class="table">
+                              <thead>
+                                  <th>
+                                      Nome
+                                  </th>
+                                  <th>
+                                      CPF
+                                  </th>
+                                  <th class="td-actions text-right">
+                                      Ações
+                                </th>
+                              </thead>
+                              <tbody *ngFor="let usuario of linhas let i = index;">
+                                  <tr>
+                                      <td>
+                                          {{usuario.nome}} {{usuario.sobrenome}}
+                                      </td>
+                                      <td>
+                                          {{usuario.cpf}}
+                                      </td>
+                                      <td class="td-actions text-right">
+                                        <button (click)="exibirInformacoes(usuario)" *ngIf="usuario.contatos.length > 0" mat-raised-button type="button" matTooltip="Contatos" [matTooltipPosition]="'above'" class="btn btn-success btn-link btn-sm btn-just-icon">
+                                          <i class="material-icons">perm_contact_calendar</i>
+                                      </button>
+                                        <button (click)="exibirEdicao(usuario)" mat-raised-button type="button" matTooltip="Editar" [matTooltipPosition]="'above'" class="btn btn-primary btn-link btn-sm btn-just-icon">
+                                            <i class="material-icons">edit</i>
+                                        </button>
+                                        <button (click)="remover(usuario)" mat-raised-button type="button" matTooltip="Remover" [matTooltipPosition]="'above'" class="btn btn-danger btn-link btn-sm btn-just-icon">
+                                            <i class="material-icons">close</i>
+                                        </button>
+                                    </td>
+                                  </tr>
+                              </tbody>
+                          </table>
+                          <div *ngIf="linhas.length == 0">
+                            <h4 style="text-align: center;">Nenhuma Pessoa Cadastrada!</h4>
+                        </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+      <div class="row" *ngIf="pessoaSelecionada && isInformacoes && !isEditando">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header card-header-success">
+                  <h4 class="card-title ">Contatos de {{pessoaSelecionada.nome}} {{pessoaSelecionada.sobrenome}}</h4>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <th>
+                                    Tipo
+                                </th>
+                                <th>
+                                    Valor
+                                </th>
+                            </thead>
+                            <tbody *ngFor="let contato of pessoaSelecionada.contatos let i = index;">
+                                <tr>
+                                    <td>
+                                        {{contato.tipoContato}}
+                                    </td>
+                                    <td>
+                                        {{contato.valor}}
+                                    </td>
+                               </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <button mat-raised-button (click)="fecharInformacoes()" type="submit" class="btn btn-muted pull-right">Voltar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div *ngIf="pessoaSelecionada && !isInformacoes && isEditando">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header card-header-success">
+                        <h4 class="card-title">Edição de Pessoa</h4>
+                    </div>
+                    <div class="card-body">
+                        <form [formGroup]="f">
+                            <div class="row">
+                                <div class="col-md-3">
+                                  <mat-form-field class="example-full-width">
+                                    <input matInput placeholder="Nome" minlength="3" maxlength="255" formControlName="nome" type="text" required>
+                                  </mat-form-field>
+                                </div>
+                                <div class="col-md-6">
+                                  <mat-form-field class="example-full-width">
+                                    <input matInput placeholder="Sobrenome" minlength="3" maxlength="255" formControlName="sobrenome" type="text" required>
+                                  </mat-form-field>
+                                </div>
+                                <div class="col-md-3">
+                                  <mat-form-field class="example-full-width">
+                                    <input matInput placeholder="CPF" minlength="11" maxlength="11" formControlName="cpf" type="text" required>
+                                  </mat-form-field>
+                                </div>
+                            </div>
+                          </form>
+                            <br/>
+                            <div class="col-md-12">
+                              <div class="card">
+                                  <div class="card-header card-header-warning">
+                                      <h4 class="card-title">Contatos</h4>
+                                  </div>
+                                  <div class="card-body">
+                                    <form [formGroup]="fContato">
+                                      <div class="row">
+                                          <div class="col-md-4">
+                                            <mat-form-field>
+                                              <mat-label>Tipo</mat-label>
+                                              <mat-select formControlName="tipoContato" [(value)]="valorTipo">
+                                                <mat-option *ngFor="let tipo of tipos" [value]="tipo.valor">
+                                                  {{tipo.visualizacao}}
+                                                </mat-option>
+                                              </mat-select>
+                                          </mat-form-field>
+                                          </div>
+                                          <div class="col-md-6">
+                                            <mat-form-field class="example-full-width">
+                                              <input matInput placeholder="Valor" minlength="3" formControlName="valor" type="text">
+                                            </mat-form-field>
+                                          </div>
+                                          <div class="col-md-2">
+                                            <button mat-raised-button (click)="incluirContato(fContato)"
+                                            type="submit" class="btn btn-warning pull-right">Inserir</button>
+                                          </div>
+                                      </div>
+                                    </form>
+                                    <div class="clearfix"></div>
+                                    <div class="card-body" *ngIf="contatos.length > 0">
+                                      <div class="table-responsive">
+                                          <table class="table">
+                                              <thead>
+                                                  <th>
+                                                      Tipo
+                                                  </th>
+                                                  <th>
+                                                      Valor
+                                                  </th>
+                                                  <th class="td-actions text-right">
+                                                    Remover
+                                                  </th>
+                                              </thead>
+                                              <tbody *ngFor="let contato of contatos let i = index;">
+                                                  <tr>
+                                                      <td>
+                                                          {{contato.tipoContato}}
+                                                      </td>
+                                                      <td>
+                                                          {{contato.valor}}
+                                                      </td>
+                                                      <td class="td-actions text-right">
+                                                        <button (click)="removerContatoEdicao(contato)" mat-raised-button type="button" matTooltip="Remover" [matTooltipPosition]="'above'" class="btn btn-danger btn-link btn-sm btn-just-icon">
+                                                            <i class="material-icons">close</i>
+                                                        </button>
+                                                    </td>
+                                                 </tr>
+                                              </tbody>
+                                          </table>
+                                      </div>
+                                  </div>
+                                  </div>
+                              </div>
+                          </div>
+                          <button (click)="editar()" mat-raised-button type="submit" class="btn btn-success pull-right">Editar Pessoa</button>
+                          <button mat-raised-button (click)="fecharEdicao()" type="submit" class="btn btn-muted pull-right">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+  
